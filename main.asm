@@ -82,14 +82,13 @@ imprimeEscolhas:
     jal ra, imprimeX
     jal ra, escolhaPC
 
-    j fim
+    jal ra, delay
+
+    j main
 
 # ==========================================================> fim < ==========================================
 
 fim:    
-    addi a7, zero, 4
-    la a0, strEnter
-    ecall
 
     addi a7, zero, 10
     ecall
@@ -133,5 +132,18 @@ imprimeX:
     addi a7, zero, 4
     la a0, strX
     ecall
+
+    jr ra
+
+# ============================================= enter e delay =============================================
+delay:
+    addi a7, zero, 4
+    la a0, strEnter
+    ecall #imprime entre
+    ecall #imprime entre
+
+    addi a7, zero, 32
+    addi a0, zero, 1000
+    ecall #dalay de 1s
 
     jr ra
