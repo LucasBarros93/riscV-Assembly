@@ -1,175 +1,137 @@
-    .data
-    .align 0
+.data
+.align 0
 
-str_beg: .asciz "Escolha uma opção: \n0. Encerrar\n1. pedra\n2. papel\n3. tesoura\n\n"
+str1: .asciz "Escolha sua opcao:\n1 - Pedra\n2 - Papel\n3 - Tesoura\n\n0 - Sair\n\n"
+strEmpate: .asciz "Empate!\n"
+strGanhou: .asciz "Ganhou!\n"
+strPerdeu: .asciz "Perdeu!\n"
 
-str_win: .asciz "\n\nVoce Venceu!\n\n"
-str_los: .asciz "\n\nVoce Perdeu!\n\n"
-str_drw: .asciz "\n\nEmpate!\n\n"
+strPedra: .asciz "Pedra"
+strPapel: .asciz "Papel"
+strTesoura: .asciz "Tesoura"
+strX: .asciz " x "
+strEnter: .asciz "\n"
 
-str_x: .asciz " x "
-str_r: .asciz "pedra"
-str_p: .asciz "papel"
-str_s: .asciz "tesoura"
-
-    .text
-    .align 2
-    .globl main
+.text
+.align 2
+.global main
 
 main:
-    #ENTRADAS
-    #print começo
-    addi a7, zero, 4
-    la a0, str_beg
+
+    # imprimir as opcoes na tela
+    addi a7, zero, 4 
+    la a0, str1
     ecall
 
-    #lendo numero do usuario
+    # Lendo escolha do usuario
     addi a7, zero, 5
     ecall
+    add s0, zero, a0  # salvando em s0
 
-    add s0, zero, a0 # s0 = num_usuario
+    beq a0, zero, fim
 
-    beq s0, zero, end # if s0 == 0 then end:
-    
-    #gerando numero aleatorio
-    addi a7, zero, 42
+# ========================================= gerando numero aleatorio ====================================
+
+    addi a0, zero, 0
     addi a1, zero, 3
+    addi a7, zero, 42
     ecall
 
-    addi s1, a0, 1 # s1 = random_num[1,3]
+    addi s1, a0, 1
 
+# ================================================> escolhas <============================================
 
-
-print_game:
-    # PRINT JOGO
     addi t1, zero, 1
     addi t2, zero, 2
-    addi t3, zero, 3
+    addi t3, zero, -1
+    addi t4, zero, -2
+    addi t5, zero, 0
+    addi t6, zero, 3
 
-    beq s0, t1, rock_p
-    beq s0, t2, paper_p
-    beq s0, t3, scissor_p
+    sub t0, s0, s1
+    beq t0, zero, empate
+    beq t0, t3, perdeu
+    beq t0, t4, ganhou
+    beq t0, t1, ganhou
+    beq t0, t2, perdeu
 
-x:
-    #print x
+# ========================================== analisar vitoria ================================================
+
+empate:
     addi a7, zero, 4
-    la a0, str_x
+    la a0, strEmpate
     ecall
+    j imprimeEscolhas
 
-    beq s1, t1, rock_c
-    beq s1, t2, paper_c
-    beq s1, t3, scissor_c
-
-rock_p:
-    #print pedra
+ganhou:
     addi a7, zero, 4
-    la a0, str_r
+    la a0, strGanhou
     ecall
-    j x
+    j imprimeEscolhas
 
-scissor_p:
-    #print tesoura
+perdeu:
     addi a7, zero, 4
-    la a0, str_s
+    la a0, strPerdeu
     ecall
-    j x
+    j imprimeEscolhas
 
-paper_p:
-    #print papel
+# ============================================= opcoes de impressao =============================================
+
+imprimeEscolhas:
+    jal ra, escolhaJogador
+    jal ra, imprimeX
+    jal ra, escolhaPC
+
+    j fim
+
+# ==========================================================> fim < ==========================================
+
+fim:    
     addi a7, zero, 4
-    la a0, str_p
-    ecall
-    j x
-
-rock_c:
-    #print pedra
-    addi a7, zero, 4
-    la a0, str_r
-    ecall
-    j res
-
-scissor_c:
-    #print tesoura
-    addi a7, zero, 4
-    la a0, str_s
-    ecall
-    j res
-
-paper_c:
-    #print papel
-    addi a7, zero, 4
-    la a0, str_p
-    ecall
-    j res
-
-
-
-res:
-    # RESULTADO DA PARTIDA
-    # If draw, num_usuario == random_num
-    beq s0, s1, draw
-
-    #registrador aux
-    sub s2, s0, s1 # s2 = s0 - s1 
-
-    # If win, aux == 1 || aux == -2
-    addi t1, zero, 1
-    addi t2, zero, -2
-    beq s2, t1, win
-    beq s2, t2, win
-
-    # If lose, aux == -1 || aux == 2
-    addi t1, zero, -1
-    addi t2, zero, 2
-    beq s2, t1, lose
-    beq s2, t2, lose
-
-draw:
-    #print empate
-    addi a7, zero, 4
-    la a0, str_drw
+    la a0, strEnter
     ecall
 
-    #espera 1s
-    addi a7, zero, 32
-    addi a0, zero, 1000
-    ecall
-
-    ecall
-    j main #loop
-    
-win:
-    #print win
-    addi a7, zero, 4
-    la a0, str_win
-    ecall
-    
-    #espera 1s
-    addi a7, zero, 32
-    addi a0, zero, 1000
-    ecall
-
-    j main #loop
-
-lose:
-    #print lose
-    addi a7, zero, 4
-    la a0, str_los
-    ecall
-
-    #espera 1s
-    addi a7, zero, 32
-    addi a0, zero, 1000
-    ecall
-
-    j main #loop
-
-
-
-
-end:
-    #encerra programa
     addi a7, zero, 10
     ecall
-    
-    
+
+# =========================================== decidindo impressao ===================================================
+
+escolhaJogador:
+    beq s0, t1, pedra
+    beq s0, t2, papel
+    beq s0, t6, tesoura
+
+escolhaPC:
+    beq s1, t1, pedra
+    beq s1, t2, papel
+    beq s1, t6, tesoura
+
+# ============================================= opcoes de impressao =============================================
+
+pedra:
+    addi a7, zero, 4
+    la a0, strPedra
+    ecall
+
+    jr ra
+
+papel:
+    addi a7, zero, 4
+    la a0, strPapel
+    ecall
+
+    jr ra
+
+tesoura:
+    addi a7, zero, 4
+    la a0, strTesoura
+    ecall
+
+    jr ra
+
+imprimeX: 
+    addi a7, zero, 4
+    la a0, strX
+    ecall
+
+    jr ra
