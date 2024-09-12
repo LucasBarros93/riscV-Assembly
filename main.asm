@@ -1,5 +1,5 @@
-.data
-.align 0
+    .data
+    .align 0
 
 str1: .asciz "Escolha sua opcao:\n1 - Pedra\n2 - Papel\n3 - Tesoura\n\n0 - Sair\n\n"
 strEmpate: .asciz "Empate!\n"
@@ -12,9 +12,9 @@ strTesoura: .asciz "Tesoura"
 strX: .asciz " x "
 strEnter: .asciz "\n"
 
-.text
-.align 2
-.global main
+    .text
+    .align 2
+    .global main
 
 main:
 
@@ -28,11 +28,10 @@ main:
     ecall
     add s0, zero, a0  # salvando em s0
 
-    beq a0, zero, fim
+    beq s0, zero, fim
 
-# ========================================= gerando numero aleatorio ====================================
+# =========================================> gerando numero aleatorio <====================================
 
-    addi a0, zero, 0
     addi a1, zero, 3
     addi a7, zero, 42
     ecall
@@ -45,17 +44,16 @@ main:
     addi t2, zero, 2
     addi t3, zero, -1
     addi t4, zero, -2
-    addi t5, zero, 0
-    addi t6, zero, 3
+    addi t5, zero, 3
 
     sub t0, s0, s1
     beq t0, zero, empate
-    beq t0, t3, perdeu
-    beq t0, t4, ganhou
     beq t0, t1, ganhou
+    beq t0, t4, ganhou
     beq t0, t2, perdeu
+    beq t0, t3, perdeu
 
-# ========================================== analisar vitoria ================================================
+# ==========================================> analisar vitoria <================================================
 
 empate:
     addi a7, zero, 4
@@ -75,7 +73,7 @@ perdeu:
     ecall
     j imprimeEscolhas
 
-# ============================================= opcoes de impressao =============================================
+# =============================================> opcoes de impressao <=============================================
 
 imprimeEscolhas:
     jal ra, escolhaJogador
@@ -86,26 +84,26 @@ imprimeEscolhas:
 
     j main
 
-# ==========================================================> fim < ==========================================
+# ==========================================================> fim <==========================================
 
 fim:    
 
     addi a7, zero, 10
     ecall
 
-# =========================================== decidindo impressao ===================================================
+# ===========================================> decidindo impressao <===================================================
 
 escolhaJogador:
     beq s0, t1, pedra
     beq s0, t2, papel
-    beq s0, t6, tesoura
+    beq s0, t5, tesoura
 
 escolhaPC:
     beq s1, t1, pedra
     beq s1, t2, papel
-    beq s1, t6, tesoura
+    beq s1, t5, tesoura
 
-# ============================================= opcoes de impressao =============================================
+# =============================================> opcoes de impressao <=============================================
 
 pedra:
     addi a7, zero, 4
@@ -135,12 +133,12 @@ imprimeX:
 
     jr ra
 
-# ============================================= enter e delay =============================================
+# =============================================> enter e delay <=============================================
 delay:
     addi a7, zero, 4
     la a0, strEnter
-    ecall #imprime entre
-    ecall #imprime entre
+    ecall #imprime enter
+    ecall #imprime enter
 
     addi a7, zero, 32
     addi a0, zero, 1000
