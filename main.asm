@@ -27,7 +27,7 @@ main:
     addi a1, zero, 3
     ecall
 
-    add s1, zero, a0 # s1 = random_num //GIGANTE
+    add s1, zero, a0 # s1 = random_num[0,2]
     
     addi a7, zero, 1
     add a0, zero, s1
