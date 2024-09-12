@@ -27,12 +27,14 @@ main:
     addi a1, zero, 3
     ecall
 
-    add s1, zero, a0 # s1 = random_num[0,2]
+    addi s1, a0, 1 # s1 = random_num[1,3]
     
+    #DEBUG
     addi a7, zero, 1
     add a0, zero, s1
     ecall
 
+    #encerra programa
     addi a7, zero, 10
     ecall
     
