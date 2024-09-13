@@ -20,11 +20,11 @@ head: .word 0
 
 # s0 -> escolha do usuário
 # s1 -> escolha do PC
-# s2 -> 
-# s3 -> 
-# s4 -> 
-# s5 -> 
-# s6 -> 
+# s2 -> registrador com valor fixo de 1
+# s3 -> registrador com valor fixo de 2
+# s4 -> registrador com valor fixo de -1
+# s5 -> registrador com valor fixo de -2
+# s6 -> registrador com valor fixo de 3
 # s7 -> 
 # s8 -> 
 # s9 -> 
@@ -32,11 +32,11 @@ head: .word 0
 # s11 -> ponteiro para o começo da lista
 
 # t0 -> resultado numérico da partida
-# t1 -> registrador com valor fixo de 1
-# t2 -> registrador com valor fixo de 2
-# t3 -> registrador com valor fixo de -1
-# t4 -> registrador com valor fixo de -2
-# t5 -> registrador com valor fixo de 3
+# t1 -> no atual da lista
+# t2 -> 
+# t3 -> 
+# t4 -> 
+# t5 -> 
 # t6 -> cria nó da lista
 
     .global main
@@ -67,18 +67,18 @@ main:
 
 # ================================================> escolhas <============================================
 
-    addi t1, zero, 1
-    addi t2, zero, 2
-    addi t3, zero, -1
-    addi t4, zero, -2
-    addi t5, zero, 3
+    addi s2, zero, 1
+    addi s3, zero, 2
+    addi s4, zero, -1
+    addi s5, zero, -2
+    addi s6, zero, 3
 
     sub t0, s0, s1
     beq t0, zero, empate
-    beq t0, t1, ganhou
-    beq t0, t4, ganhou
-    beq t0, t2, perdeu
-    beq t0, t3, perdeu
+    beq t0, s2, ganhou
+    beq t0, s5, ganhou
+    beq t0, s3, perdeu
+    beq t0, s4, perdeu
 
 # ==========================================> analisar vitoria <================================================
 
@@ -121,14 +121,14 @@ fim:
 # ===========================================> decidindo impressao <===================================================
 
 escolhaJogador:
-    beq s0, t1, pedra
-    beq s0, t2, papel
-    beq s0, t5, tesoura
+    beq s0, s2, pedra
+    beq s0, s3, papel
+    beq s0, s6, tesoura
 
 escolhaPC:
-    beq s1, t1, pedra
-    beq s1, t2, papel
-    beq s1, t5, tesoura
+    beq s1, s2, pedra
+    beq s1, s3, papel
+    beq s1, s6, tesoura
 
 # =============================================> opcoes de impressao <=============================================
 
@@ -186,45 +186,44 @@ adicionaNo:
     sw zero, 4(t6)  #proximo no depois de t6 e NULL (ultimo no)
 
     la s11, head    #olha pra cabeca da lista
-    lw s9, 0(s11)   #olha o conteudo da cabeca
+    lw t1, 0(s11)   #olha o conteudo da cabeca
 
-    beq s9, zero, primeiroNo    #se o conteudo for NULL(0), esse eh o primeiro no
+    beq t1, zero, primeiroNo    #se o conteudo for NULL(0), esse eh o primeiro no
 
-    mv s9, s10
-    sw t6 4(s9)
+    mv t1, s10 #t1 = ultimo no (s10)
+    sw t6, 4(t1) #proximo no do ultimo(t1) é o novo(t6)
 
-    mv s10, t6
+    mv s10, t6 #ultimo no (s10) eh t6
 
     jr ra
 
 
 primeiroNo:
-    sw t6, 0(s11)
-    mv s10, t6
+    sw t6, 0(s11) #cabeca aponta pra novo no (t6)
+    mv s10, t6 #ultimo no (s10) eh t6
 
     jr ra
 
 # =============================================> print lista encadeada <=============================================
 
 printaLista:
-    la s11, head
-    lw s9, 0(s11)
+    la s11, head #olha pra cabeca da lista
+    lw t1, 0(s11) #olha o conteudo da cabeca
 
-    beq s9, zero, listaVazia
+    beq t1, zero, listaVazia #se o conteudo for NULL(0), a lista ta vazia
     j printLoop
 
 printLoop:
-    beq s9, zero, fim
-    lw t6, 0 (s9)
+    beq t1, zero, fim #se o no atual(t1) eh vazio, acabou a lista
+    lw t6, 0(t1)    #carreaga o conteudo do no atual (t1) em 6
 
     #print
-    add a0, zero, t6
-    addi a7, zero, 1
-    ecall
+    add s1, zero, t6
+    jal ra, escolhaPC
 
     jal delay
 
-    lw s9, 4(s9)
+    lw t1, 4(t1) #no atual (t1) = proximo no 
     j printLoop
     
 
