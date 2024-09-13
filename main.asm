@@ -13,6 +13,9 @@ strX: .asciz " x "
 strEnter: .asciz "\n"
 strTraco: .asciz " - "
 
+strNumPartidas1: .asciz "Voce ganhou "
+strNumPartidas2: .asciz " partida(s) de "
+
 head: .word 0
 
     .text
@@ -34,8 +37,8 @@ head: .word 0
 
 # t0 -> resultado numérico da partida
 # t1 -> no atual da lista
-# t2 -> 
-# t3 -> 
+# t2 -> contador de vitórias
+# t3 -> contador de partidas
 # t4 -> 
 # t5 -> 
 # t6 -> cria nó da lista
@@ -43,7 +46,6 @@ head: .word 0
     .global main
 
 main:
-
     # imprimir as opcoes na tela
     addi a7, zero, 4 
     la a0, str1
@@ -55,6 +57,8 @@ main:
     add s0, zero, a0  # salvando em s0
 
     beq s0, zero, printaLista
+
+    addi t3, t3, 1
 
 # =========================================> gerando numero aleatorio <====================================
 
@@ -89,6 +93,7 @@ empate:
     j imprimeEscolhas
 
 ganhou:
+    addi t2, t2, 1
     addi a7, zero, 4
     la a0, strGanhou
     ecall
@@ -217,7 +222,7 @@ printaLista:
     j printLoop
 
 printLoop:
-    beq t1, zero, fim #se o no atual(t1) eh vazio, acabou a lista
+    beq t1, zero, numVit #se o no atual(t1) eh vazio, acabou a lista
     
     lw s0, 0(t1)    #carreaga o conteudo do no atual (t1) em s0
     lw s1, 4(t1)    #carreaga o conteudo do no atual (t1) em s1
@@ -279,3 +284,27 @@ imprimePerdeu:
     lw t1, 12(t1) #no atual (t1) = proximo no 
 
     j printLoop
+
+numVit:
+
+    addi a7, zero, 4
+    la a0, strNumPartidas1
+    ecall
+
+    addi a7, zero, 1
+    add a0, zero, t2
+    ecall
+
+    addi a7, zero, 4
+    la a0, strNumPartidas2
+    ecall
+
+    addi a7, zero, 1
+    add a0, zero, t3
+    ecall
+
+    addi a7, zero, 4
+    la a0, strEnter
+    ecall
+
+    j fim
