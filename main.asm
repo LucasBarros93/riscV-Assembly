@@ -6,6 +6,11 @@ strEmpate: .asciz "Empate!\n"
 strGanhou: .asciz "Ganhou!\n"
 strPerdeu: .asciz "Perdeu!\n"
 
+strDivisoria1: .asciz "=============================================> PARTIDA "
+strDivisoria2: .asciz " <=============================================\n\n"
+
+strDivisoriaResultados: .asciz "=============================================> RESULTADOS <=============================================\n\n"
+
 strPedra: .asciz "Pedra"
 strPapel: .asciz "Papel"
 strTesoura: .asciz "Tesoura"
@@ -13,14 +18,14 @@ strX: .asciz " x "
 strEnter: .asciz "\n"
 strTraco: .asciz " - "
 
-strNumPartidas1: .asciz "Voce ganhou "
+strNumPartidas1: .asciz "=> Voce ganhou "
 strNumPartidas2: .asciz " partida(s) de "
+
+    .align 2
 
 head: .word 0
 
     .text
-    .align 2
-
 
 # s0 -> escolha do usuário
 # s1 -> escolha do PC
@@ -46,6 +51,19 @@ head: .word 0
     .global main
 
 main:
+
+    addi a7, zero, 4
+    la a0, strDivisoria1
+    ecall
+
+    addi a7, zero, 1
+    addi a0, t3, 1
+    ecall
+
+    addi a7, zero, 4
+    la a0, strDivisoria2
+    ecall
+
     # imprimir as opcoes na tela
     addi a7, zero, 4 
     la a0, str1
@@ -56,9 +74,15 @@ main:
     ecall
     add s0, zero, a0  # salvando em s0
 
+    addi a7, zero, 4
+    la a0, strEnter
+    ecall
+
+
     beq s0, zero, printaLista
 
     addi t3, t3, 1
+
 
 # =========================================> gerando numero aleatorio <====================================
 
@@ -115,6 +139,7 @@ imprimeEscolhas:
     jal ra, delay
 
     jal ra, adicionaNo
+    
     j main
 
 # ==========================================================> fim <==========================================
@@ -218,6 +243,10 @@ printaLista:
     la s11, head #olha pra cabeca da lista
     lw t1, 0(s11) #olha o conteudo da cabeca
 
+    addi a7, zero, 4
+    la a0, strDivisoriaResultados
+    ecall
+
     beq t1, zero, listaVazia #se o conteudo for NULL(0), a lista ta vazia
     j printLoop
 
@@ -305,6 +334,7 @@ numVit:
 
     addi a7, zero, 4
     la a0, strEnter
+    ecall
     ecall
 
     j fim
