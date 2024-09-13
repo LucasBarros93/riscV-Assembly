@@ -11,6 +11,7 @@ strPapel: .asciz "Papel"
 strTesoura: .asciz "Tesoura"
 strX: .asciz " x "
 strEnter: .asciz "\n"
+strTraco: .asciz " - "
 
 head: .word 0
 
@@ -182,7 +183,7 @@ adicionaNo:
 
     mv t6, a0  #t6 é o novo no
 
-    sw s0, 0(t6)    #salva o valor do playerem t6
+    sw s0, 0(t6)    #salva o valor do player em t6
     sw s1, 4(t6)    #salva o valor do pc em t6
     sw t0, 8(t6)    #salva o valor do resultado em t6
     sw zero, 12(t6)  #proximo no depois de t6 e NULL (ultimo no)
@@ -227,11 +228,54 @@ printLoop:
     jal ra, imprimeX
     jal ra, escolhaPC
 
-    jal delay
-
-    lw t1, 12(t1) #no atual (t1) = proximo no 
-    j printLoop
-    
+    sub t0, s0, s1
+    beq t0, zero, imprimeEmpate
+    beq t0, s2, imprimeGanhou
+    beq t0, s5, imprimeGanhou
+    beq t0, s3, imprimePerdeu
+    beq t0, s4, imprimePerdeu
 
 listaVazia:
     j fim
+
+# ==========================================> analisar vitoria <================================================
+
+imprimeEmpate:
+    addi a7, zero, 4
+    la a0, strTraco
+    ecall
+    la a0, strEmpate
+    ecall
+    
+    jal delay
+
+    lw t1, 12(t1) #no atual (t1) = proximo no 
+
+    j printLoop
+
+
+imprimeGanhou:
+    addi a7, zero, 4
+    la a0, strTraco
+    ecall
+    la a0, strGanhou
+    ecall
+
+    jal delay
+
+    lw t1, 12(t1) #no atual (t1) = proximo no 
+
+    j printLoop
+
+imprimePerdeu:
+    addi a7, zero, 4
+    la a0, strTraco
+    ecall
+    la a0, strPerdeu
+    ecall
+
+    jal delay
+
+    lw t1, 12(t1) #no atual (t1) = proximo no 
+
+    j printLoop
