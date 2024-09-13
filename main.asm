@@ -63,7 +63,6 @@ main:
 
     addi s1, a0, 1
     
-    jal ra, adicionaNo
 
 # ================================================> escolhas <============================================
 
@@ -109,6 +108,7 @@ imprimeEscolhas:
 
     jal ra, delay
 
+    jal ra, adicionaNo
     j main
 
 # ==========================================================> fim <==========================================
@@ -176,14 +176,16 @@ delay:
 # =============================================> add lista encadeada <=============================================
 
 adicionaNo:
-    addi a0, zero, 8
+    addi a0, zero, 16
     addi a7, zero, 9
-    ecall   #reserva 8 espaços de mempria em a0
+    ecall   #reserva 16 espaços de mempria em a0
 
     mv t6, a0  #t6 é o novo no
 
-    sw s1, 0(t6)    #salva o valor em t6
-    sw zero, 4(t6)  #proximo no depois de t6 e NULL (ultimo no)
+    sw s0, 0(t6)    #salva o valor do playerem t6
+    sw s1, 4(t6)    #salva o valor do pc em t6
+    sw t0, 8(t6)    #salva o valor do resultado em t6
+    sw zero, 12(t6)  #proximo no depois de t6 e NULL (ultimo no)
 
     la s11, head    #olha pra cabeca da lista
     lw t1, 0(s11)   #olha o conteudo da cabeca
@@ -191,7 +193,7 @@ adicionaNo:
     beq t1, zero, primeiroNo    #se o conteudo for NULL(0), esse eh o primeiro no
 
     mv t1, s10 #t1 = ultimo no (s10)
-    sw t6, 4(t1) #proximo no do ultimo(t1) é o novo(t6)
+    sw t6, 12(t1) #proximo no do ultimo(t1) é o novo(t6)
 
     mv s10, t6 #ultimo no (s10) eh t6
 
@@ -215,15 +217,19 @@ printaLista:
 
 printLoop:
     beq t1, zero, fim #se o no atual(t1) eh vazio, acabou a lista
-    lw t6, 0(t1)    #carreaga o conteudo do no atual (t1) em 6
+    
+    lw s0, 0(t1)    #carreaga o conteudo do no atual (t1) em s0
+    lw s1, 4(t1)    #carreaga o conteudo do no atual (t1) em s1
+    lw t0, 8(t1)    #carreaga o conteudo do no atual (t1) em t0
 
     #print
-    add s1, zero, t6
+    jal ra, escolhaJogador
+    jal ra, imprimeX
     jal ra, escolhaPC
 
     jal delay
 
-    lw t1, 4(t1) #no atual (t1) = proximo no 
+    lw t1, 12(t1) #no atual (t1) = proximo no 
     j printLoop
     
 
